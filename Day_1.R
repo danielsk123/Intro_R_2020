@@ -18,12 +18,17 @@ glimpse(laminaria) #generates an overview of the dataset
 view(laminaria) #opens the data for viewing
 names(laminaria) #shows column names
 
+#Tidyverse
+
 lam_sub<-laminaria %>% # Tell R which dataframe we are using and saves result as a dataset
   select(site, total_length) # Select only specific columns
 
+# %>%  shift+ctrl+m
+# <-  alt+-
+
 lam_slice <- laminaria %>% 
   select(site, total_length) %>% # Select specific columns first
-  slice(56:78)
+  slice(56:78) #selects only data between these row numbers
 
 lam_kom <- laminaria %>%
   filter(site == "Kommetjie") #"filter" removes only information that is needed
