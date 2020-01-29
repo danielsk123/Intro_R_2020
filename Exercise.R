@@ -32,6 +32,7 @@ laminaria %>%
 laminaria %>%
   select(site, region, stipe_length, stipe_mass)
 
-###
-    
+##### Very neat script
+# Adding comments after each line of code only helps you and the collaborator understand what you are doing.
+# Overall Mark for DAY 1: 8/10
             
