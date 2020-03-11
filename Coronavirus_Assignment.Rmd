@@ -1,0 +1,330 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+#Epidemic Management: Using the HIV approach to manage COVID-19 (novel Coronavirus 2019)
+
+#K.S Daniels*
+
+#*Department of Biodiversity and Conservation Biology, University of the Western Cape, Belville 7701, South Africa
+#Keywords: Coronavirus, Wuhan, Epidemic, R
+
+**1.	Introduction**
+China has been the epicentre of majority of the zoonotic virus outbreaks in the recent past due to the cultural significance of wildlife in Chinese medicine (Unknown, 2020)). COVID-19 originated at a wildlife market in Wuhan, China (Unknown, 2020) with bats as their suspected intermediate host (Lu et al., 2020). Human-to-human transmission aided in the establishment of COVID-19 (Jung et al., 2020). Although it has a lower mortality rate than other coronaviruses such as SARS-CoV (Severe Acute Respiratory Syndrome) and MERS-CoV (Middle East Respiratory Syndrome), it has already claimed more lives than both (Mahase, 2020). 14% of cases of COVID-19 were severe, causing pneumonia and 5% of patients were at risk of respiratory failure, septic shock and organ failure (Mahase, 2020). 
+It is not guaranteed that a single case would immediately lead to a major epidemic in the destination country but COVID-19 has been shown to have great pandemic potential (Jung et al., 2020). COVID-19 has so far spread from China to 26 countries as seen in Fig 1. The virus was only found to be fatal in 2% of reported cases (Mahase, 2020) but poses a huge risk in developing countries that are not empowered with the infrastructure to cope with such epidemics. International response has revolved around avoiding a pandemic and preventing panic. In the information age, inaccuracies are often spread via social media (Horton, 2020).
+One of these potential inaccuracies will be explored. There is a comment that holds that when dealing with COVID-19, it is not so much a matter of who will be infected but rather when most of the world’s population will have been infected. The focus should then not be containment but rather effective management of the outbreak. Because of this view on the potential global spread of the virus, this study will compare COVID-19 to HIV. 
+HIV infections reached epidemic levels in the 1980’s where it spread to its current extent, occurring in every country in the world (KFF, 2020). The aim of this study is to show that through awareness programmes, increasing availability of antiretroviral drugs and government intervention, HIV has been effectively managed. It then stands to reason that this can be achieved in the case of COVID -19 despite its pandemic potential given its low mortality rate. 
+
+#Installing packages
+```{r}
+
+#install.packages("prettymapr")
+#install.packages("plotly")
+#install.packages("contrib.url")
+```
+
+#Loading libraries
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+library(ggpubr)
+library(readr)
+library(scales)
+library(ggsn)
+library(maps)
+library(ggplot2)
+library(maptools)
+library(lubridate)
+library(plotly)
+citation("ggplot2")
+citation("tidyverse")
+#library(mudata)
+#install.packages("mudata")
+```
+
+
+#Loading data
+
+```{r}
+deaths_and_new_cases_of_hiv <- read_csv("data/deaths-and-new-cases-of-hiv.csv")
+
+Corona_virus_data_deaths <- read_csv("data/time_series_19-covid-Deaths.csv")
+Corona_virus_data_recovered <- read_csv("data/time_series_19-covid-Recovered.csv")
+Corona_virus_data_confirmed <- read_csv("data/time_series_19-covid-Confirmed.csv")
+
+#Data source: https://github.com/CSSEGISandData/COVID-19
+#Data source: https://ourworldindata.org/hiv-aids
+```
+
+# Mapping EXtent of COVID-19
+
+```
+Map_1<- ggplot() +
+  borders() + 
+  coord_equal()+
+  labs(title="Spread of COVID-19")+
+  theme_bw()+
+  borders(fill = "white", colour = "black")+
+  geom_point(data=Corona_virus_confirmed, aes(x=Long, y=Lat), color="red")
+#  +scalebar(x.min = 22, x.max = 26, y.min = -36, y.max = -35, # Set location of bar
+#           dist = 200, height = 1, st.dist = 0.8, st.size = 4, # Set particulars
+#           transform = TRUE, model = "WGS84") + # Set appearance
+#           north(x.min = -150, x.max = -100, y.min = -70, y.max = -60, # Set location of symbol
+#                 scale = 30, symbol = 16)
+
+Map_1
+
+ggplotly(Map_1)
+```
+
+```{r}
+Map_1<- ggplot() +
+  borders() + 
+  coord_equal()+
+  labs(title="Spread of COVID-19")+ 
+  theme_bw()+
+  borders(fill = "white", colour = "black")+
+  geom_point(data=Corona_virus_confirmed, aes(x=Long, y=Lat), color="red")
+#  +scalebar(x.min = 22, x.max = 26, y.min = -36, y.max = -35, # Set location of bar
+#           dist = 200, height = 1, st.dist = 0.8, st.size = 4, # Set particulars
+#           transform = TRUE, model = "WGS84") + # Set appearance
+#           north(x.min = -150, x.max = -100, y.min = -70, y.max = -60, # Set location of symbol
+#                 scale = 30, symbol = 16)
+
+Map_1
+
+ggplotly(Map_1)
+```
+**Fig. 1.** Map showing the global extent of COVID-19
+
+**2.	Materials and Methods**
+The HIV dataset was taken from the University of Oxford Programme on Global Development site where they were downloaded as a CSV (Comma Separated Values) file. Data were only available for the number of deaths, existing cases and new cases of HIV in 2018. The data were arranged by country and contained values for deaths and number of new cases. Recoveries column was not present since it is an incurable virus.
+The COVID-19 datasets were taken from Github where a dataset was made available using data from Johns Hopkins University Centre for Systems Science and Engineering. This data were last updated on 05/03/20. The data were arranged by country. Province or state were included when referring to China and the USA respectively. Latitude and longitude values were included. 
+Analysis and figures were done in R (R Core Team, 2019). Both datasets were tidied in R using the Tidyverse package (Wickham et al., 2019). Figures were produced using the package Ggplot2 (Wickham et al., 2016). The code used is attached as a supplement to this document. Latitude and longitude values for COVI-19 data were included and used to produce Fig. 1. The countries with the four highest values for mean confirmed cases, mean deaths and mean recoveries were used to produce Fig. 3. For HIV graphs, the mean number of new infections, deaths and cases were plotted by year. 
+
+**3.	Results**
+
+#Tidying HIV Data
+
+```{r}
+HIV_2017<- deaths_and_new_cases_of_hiv %>%
+  rename(Country= Entity, New_Infections=c(5), Deaths=c(4), Living_with_HIV= c(6)) %>%
+  select(-c(2)) %>%
+  group_by(Year) %>% 
+  summarise(mean_deaths= mean(Deaths), 
+            mean_new_infections= mean(New_Infections), 
+            mean_Living_with_HIV = mean(Living_with_HIV))
+```
+
+#Bar graphs HIV
+```
+HIV_infections <- ggplot(data = HIV_2017, aes(x = Year, y = mean_new_infections))+
+  geom_bar(stat =  "identity", aes(fill=Year))+
+  labs(x="Year", y="New Infections")
+
+HIV_infections
+
+HIV_deaths <- ggplot(data = HIV_2017, aes(x = Year, y = mean_deaths))+
+  geom_bar(stat =  "identity", aes(fill=Year))+
+  theme_bw()+
+  labs(x="Year", y="Mean Deaths")
+
+HIV_deaths
+
+HIV_living_with <- ggplot(data = HIV_2017, aes(x = Year, y = mean_Living_with_HIV))+
+                       geom_bar(stat =  "identity", aes(fill=Year))+
+                        labs(x="Year", y="Mean Living With HIV")+
+                        theme_bw()
+
+HIV_living_with
+
+#Facetting
+Graphs<- ggarrange(HIV_infections, HIV_deaths, HIV_living_with,
+ncol= 2 , nrow= 2,
+labels= c("A","B","C"),
+common.legend= FALSE)
+
+
+ggplotly(HIV_living_with)
+ggplotly(HIV_deaths)
+ggplotly(HIV_infections)
+
+```
+
+```{r}
+HIV_infections <- ggplot(data = HIV_2017, aes(x = Year, y = mean_new_infections))+
+  geom_bar(stat =  "identity", aes(fill=Year))+
+  labs(x="Year", y="New Infections")
+
+HIV_infections
+
+HIV_deaths <- ggplot(data = HIV_2017, aes(x = Year, y = mean_deaths))+
+  geom_bar(stat =  "identity", aes(fill=Year))+
+  theme_bw()+
+  labs(x="Year", y="Mean Deaths")
+
+HIV_deaths
+
+HIV_living_with <- ggplot(data = HIV_2017, aes(x = Year, y = mean_Living_with_HIV))+
+                       geom_bar(stat =  "identity", aes(fill=Year))+
+                        labs(x="Year", y="Mean Living With HIV")+
+                        theme_bw()
+
+HIV_living_with
+
+#Facetting
+Graphs<- ggarrange(HIV_infections, HIV_deaths, HIV_living_with,
+ncol= 2 , nrow= 2,
+labels= c("A","B","C"),
+common.legend= FALSE)
+
+
+ggplotly(HIV_living_with)
+ggplotly(HIV_deaths)
+ggplotly(HIV_infections)
+
+```
+**Fig. 2.** Graphs showing HIV Data by Year (A) mean new infections (B) mean deaths (C) average number of people living with HIV
+
+Fig. 2(A) shows an increase in mean new infections in the early 1980- early 2000’s which reaches its peak around 2003 then decreases dramatically. In Fig. 2(B), we find a similar trend, with mean deaths reaching its maximum in the early 2000s as well and then showing a dramatic decrease. Fig. 2(C) shows a stagnation of average number of sufferers in the early 2000’s, after which we observe a way less dramatic increase in sufferers than seen in the pre-2000 data. 
+
+#Bar graphs
+```
+Corona_Confirmed <- ggplot(data = Corona_tidy2, aes(x = Country, y = mean_confirmed))+
+  geom_bar(stat =  "identity", aes(fill=mean_confirmed))+
+  labs(x="Country", y="Mean confirmed")
+Corona_Confirmed
+
+Corona_Deaths <- ggplot(data = Corona_tidy2, aes(x = Country, y = mean_deaths))+
+  geom_bar(stat =  "identity", aes(fill=mean_deaths))+
+  labs(x="Country", y="Mean Deaths")
+Corona_Deaths
+
+Corona_Recovered <- ggplot(data = Corona_tidy2, aes(x = Country, y = mean_recovered))+
+  geom_bar(stat =  "identity", aes(fill=mean_recovered))+
+  labs(x="Country", y="Mean recovered")
+Corona_Recovered
+
+ggarrange(Corona_Confirmed, Corona_Deaths, Corona_Recovered, 
+          ncol = 2, nrow = 2, 
+          labels = c("A", "B", "C"), 
+          common.legend = FALSE,
+          legend="none")
+          
+```
+#Tidying and arranging COVID-19 Data
+
+```{r}
+Corona_virus_recovered<-Corona_virus_data_recovered %>%
+  gather(c(5:51), key = "Date", value = "Recovered") %>%
+  separate(col = Date, into = c("date", "time"), sep = " ") %>%
+  select(-time)
+  
+Corona_virus_confirmed<-Corona_virus_data_confirmed %>%
+  gather(c(5:51), key = "Date", value = "Confirmed")%>%
+  separate(col = Date, into = c("date", "time"), sep = " ")%>%
+  select(-time)
+
+Corona_virus_deaths<-Corona_virus_data_deaths %>%
+  gather(c(5:51), key = "Date", value = "Deaths")%>%
+  separate(col = Date, into = c("date", "time"), sep = " ")%>%
+  select(-time)
+
+Intermediate_dataset<-left_join(Corona_virus_recovered, Corona_virus_confirmed)
+Corona_virus_tidy<-left_join(Intermediate_dataset,Corona_virus_deaths)
+Corona_1 <- Corona_virus_confirmed %>% 
+  group_by(`Country/Region`) %>% 
+  summarise(mean_confirmed = mean(Confirmed))
+
+Corona_2 <- Corona_virus_recovered %>% 
+  group_by(`Country/Region`) %>% 
+  summarise(mean_recovered = mean(Recovered))
+
+Corona_3 <- Corona_virus_deaths %>% 
+  group_by(`Country/Region`) %>% 
+  summarise(mean_deaths = mean(Deaths))
+
+Corona_tidy <- left_join(Corona_1, Corona_2)
+Corona_tidy2 <- left_join(Corona_tidy, Corona_3)
+
+Corona_tidy2<- Corona_tidy2 %>% 
+  rename( "Country"= "Country/Region")
+
+#Create dataset for significant countries
+Corona_tidy2 <- Corona_tidy2 %>% 
+  filter(mean_deaths > 3)
+```
+
+```{r}
+Corona_Confirmed <- ggplot(data = Corona_tidy2, aes(x = Country, y = mean_confirmed))+
+  geom_bar(stat =  "identity", aes(fill=mean_confirmed))+
+  labs(x="Country", y="Mean confirmed")
+Corona_Confirmed
+
+Corona_Deaths <- ggplot(data = Corona_tidy2, aes(x = Country, y = mean_deaths))+
+  geom_bar(stat =  "identity", aes(fill=mean_deaths))+
+  labs(x="Country", y="Mean Deaths")
+Corona_Deaths
+
+Corona_Recovered <- ggplot(data = Corona_tidy2, aes(x = Country, y = mean_recovered))+
+  geom_bar(stat =  "identity", aes(fill=mean_recovered))+
+  labs(x="Country", y="Mean recovered")
+Corona_Recovered
+
+ggarrange(Corona_Confirmed, Corona_Deaths, Corona_Recovered, 
+          ncol = 2, nrow = 2, 
+          labels = c("A", "B", "C"), 
+          common.legend = FALSE,
+          legend="none")
+```
+**Fig. 3. Graphs showing COVID-19 data by country (A) average confirmed cases (B) means deaths (C) mean recovered patients**
+
+In Fig. 3(A) shows that China has the highest average number of confirmed cases, followed by South Korea and Italy. China also shows the highest number of mean deaths followed by Italy and Iran in Fig. 3(B).  Fig. 3(C) shows that China is the leader in number of recovered patients followed by Iran and Italy. 
+
+**4.	Discussion**
+The COVID-19 epidemic has spread across all of Mainland China, Italy, Iran and South Korea. Given the short time span, the average number of suffers is high. However, my results suggest that mortality rate is indeed very low, with recovery on average being likely, depending on the underlying health risks of the patient, the healthcare system of the country and the age-structure of the population. As a preventative measure travel to China has been halted but there is little evidence that travel bans stop the spread of infectious diseases therefore management is the best option (Horton, 2020).
+
+International efforts to combat the spread of HIV began in 1987. New initiatives and an increase in funding led to increased attention on the epidemic. The Joint United Nations Programme on HIV/AIDS (UNAIDS), which was formed in 1996 with the aim of bringing global attention to the epidemic (KFF, 2020). The Global Fund to Fight AIDS, Tuberculosis and Malaria was established in 2001 to provide funding access to treatment and testing (KFF, 2020). These initiatives may have played a role in the decreasing trend in new infections and mortalities in the early 2000’s and the stagnation of new infections in the same time period.
+The outbreak of COVID-19 and its predecessor SARS-CoV were zoonotic in origin. The results of this study correctly indicate that China was the epicentre of the COVID-outbreak. Prevention of a future outbreak would include putting an end to the wildlife trade and funding zoonoses monitoring programmes (Unknown, 2020). If it cannot be ended, each stage of the trade should be monitored, from supply through to demand, using interdisciplinary measures (Unknown, 2020).
+
+As with HIV, effective management is one of the most important tools public healthcare services can use to prevent COVID-19 causing more fatalities. Awareness programs on how COVID-19 can and cannot be spread and investment in preventative measures to prevent transmission are important. In the case of HIV, this meant making condoms more accessible, for example. For COVID-19, this could mean something as simple as making medical face masks more commonplace and encouraging proper hygiene practices.
+
+
+
+**5.	Conclusion**
+COVID-19 is zoonotic in origin and thus wildlife trade should be banned or monitored. Management and investment, such as was seen for the HIV epidemic in the early 2000’s and before are the most powerful tools at our disposal to combat the COVID-19 epidemic. Mortality risk is low and there is a reasonable chance of recovery from COVID-19. 
+
+
+References
+CSSEGISandData - Overview. (2020). Johns Hopkins University Centre for Systems Science and Engineering. Retrieved 11 March 2020, from https://github.com/CSSEGISandData 
+
+Jung, S., Akhmetzhanov, A., Hayashi, K., Linton, N., Yang, Y., & Yuan, B. et al. (2020). Real-Time Estimation of the Risk of Death from Novel Coronavirus (COVID-19) Infection: Inference Using Exported Cases. Journal of Clinical Medicine, 9(2), 523. doi: 10.3390/jcm9020523
+
+Lu, R., Zhao, X., Li, J., Niu, P., Yang, B., & Wu, H. et al. (2020). Genomic characterisation and epidemiology of 2019 novel coronavirus: implications for virus origins and receptor binding. The Lancet, 395(10224), 565-574. doi: 10.1016/s0140-6736(20)30251-8
+
+Mahase, E. (2020). Coronavirus: covid-19 has killed more people than SARS and MERS combined, despite lower case fatality rate. BMJ. doi: 10.1136/bmj.m641
+
+Roser, M., & Ritchie, H. (2020). HIV / AIDS. University of Oxford Programme on Global Development. Retrieved 7 March 2020, from https://ourworldindata.org/hiv-aids 
+
+KFF. (2020). The Global HIV/AIDS Epidemic Retrieved 7 March 2020, from https://www.kff.org/global-health-policy/fact-sheet/the-global-hivaids-epidemic/
+
+Horton, R. (2020). COVID-19: fighting panic with information. The Lancet, 395(10224), 537. doi: 10.1016/s0140-6736(20)30379-2
+
+R Core Team (2019). R: A language and environment for statistical
+computing. R Foundation for Statistical Computing, Vienna, Austria.
+URL https://www.R-project.org/H
+
+Unknown. (2020). Prevent and Predict. Nature Ecology & Evolution, 4(3), 283-283. doi: 10.1038/s41559-020-1150-5
+
+Wickham et al., (2016).Gggplot2: Elegant Graphics for Data Analysis.
+  Springer-Verlag. New York
+
+ Wickham et al., (2019). Welcome to the tidyverse. Journal of Open
+ Source Software, 4(43), 1686, https://doi.org/10.21105/joss.01686
+
+
+
